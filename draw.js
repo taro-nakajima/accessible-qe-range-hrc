@@ -2,41 +2,16 @@
 // programed by T. Nakajima (ISSP-NSL) Oct. 20, 2019.
 
 var Ei = new Array(5);
- var decimal_digit = 1000;
- 
- 
- function draw() {
+var decimal_digit = 1000;
+
+
+function draw() {
 
 //    draw_RLattice();
 
     draw_TOF();
 
     draw_Qxy()
-}
-
-function draw_RLattice(){
-    var canvas = document.getElementById('MyCanvas');
-    var context = canvas.getContext('2d');
-
-    var elemm = document.getElementById('slide');
-    var num = elemm.value;
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.strokeRect(1, 1, 628, 200);
-    context.beginPath();
-    context.moveTo(1, 101);
-    context.lineTo(629, 101);
-    context.stroke();
-    context.beginPath();
-    context.lineWidth=2;
-    context.moveTo(1, 101);
-    for (var i = 4; i <= 628; i += 4) {
-        context.lineTo(i + 1, 101 - 100 * Math.sin(0.01 * i)*num);
-    }
-    context.stroke();
-    context.fillText(num, 10, 50);
-    context.lineWidth=1;
-
 }
 
 function draw_TOF(){
@@ -163,7 +138,7 @@ function draw_TOF(){
         context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*10.0*Ltotal/Lsc, marginY);
         context2.stroke();
     }
- 
+
 }
 
 
@@ -354,7 +329,7 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
             //hkl-q
             PosX = originX-((h-qh[0])*a_star+(k-qk[0])*b_star*cosGamma)*scale[p];
@@ -362,7 +337,7 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
         }
     }
@@ -377,7 +352,7 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
             //hkl-q
             PosX = originX-((h-qh[1])*a_star+(k-qk[1])*b_star*cosGamma)*scale[p];
@@ -385,12 +360,12 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
         }
     }
 
-    //q-vector 1
+    //q-vector 3
     context3[p].fillStyle="rgb(250, 150, 100)";
     for (var h=-Hmax;h<=Hmax;h+=1){
         for (var k=-Kmax;k<=Kmax;k+=1){
@@ -400,7 +375,7 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
             //hkl-q
             PosX = originX-((h-qh[2])*a_star+(k-qk[2])*b_star*cosGamma)*scale[p];
@@ -408,7 +383,7 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
 
         }
@@ -424,7 +399,7 @@ function draw_Qxy(){
             if ((Math.abs(PosX-originX)<canvas3[p].width/2.0)&&(Math.abs(PosY-originY)<canvas3[p].height/2.0)){
                 context3[p].beginPath();
                 context3[p].arc(PosX,PosY, radius, 0, 2 * Math.PI);
-                context3[p].fill();    
+                context3[p].fill();
             }
         }
     }
