@@ -1,4 +1,7 @@
- var Ei = new Array(5);
+//JavaScript code for calculating accessible Q-E ranges for HRC
+// programed by T. Nakajima (ISSP-NSL) Oct. 20, 2019.
+
+var Ei = new Array(5);
  var decimal_digit = 1000;
  
  
