@@ -1,8 +1,9 @@
 //JavaScript code for calculating accessible Q-E ranges for HRC
 // programed by T. Nakajima (ISSP-NSL) Oct. 20, 2019.
-
-var Ei = new Array(5);
+var Ei_numMax=5;
+var Ei = new Array(Ei_numMax);
 var decimal_digit = 1000;
+var isOptimumEi= new Array(Ei_numMax);
 
 
 function draw() {
@@ -19,14 +20,24 @@ function draw_TOF(){
     var marginX = 50;
     var marginY = 20;
 
-    var Ltotal = 190;
-    var Lsc = 140;
-    var L1 = 150;
-    var TOF_len = 400;
-    var TextSize = 10;
-    var ChopperOpen = 4;
+    var TOFscale = 10.0;    // ms to pixel
+    var Lscale=10.0;        // meter to pixel
 
-    var Ei_numMax=5;
+    var Ltotal_R = 19.0;      // Real source to detector (m)
+    var Lsc_R = 13.97;        // Real sample chopper distance  (m)
+    var L1_R = 15.0;          // Real source to sample distance (m)
+    var TOF_len_R = 40;       // Real TOF max (ms)
+    var TOFconst = 2.286;       // TOF at 1 m is 2.286/sqrt(E)
+    var upperLimitEi = 8000;    // upper limit of Ei 8eV
+
+    var Ltotal=Ltotal_R*Lscale;
+    var Lsc = Lsc_R*Lscale;
+    var L1 = L1_R*Lscale;
+    var TOF_len = TOF_len_R*TOFscale;
+
+    var TextSize = 10;      // pixel
+    var ChopperOpen = 4;    // pixel
+
 
     var TickL = 8;
 
@@ -36,12 +47,46 @@ function draw_TOF(){
     var canvas2 = document.getElementById('CanvasTOF');
     var context2 = canvas2.getContext('2d');
 
-    var temp = document.getElementById('freq');
-    var ChopPeriod = 1.0/Number(temp.value)*1000.0*10/2;
-    var ChopRept = TOF_len/ChopPeriod;
+    var freq = Number(document.getElementById('freq').value);
+    var ChopPeriod_R = 1.0/freq*1000.0/2;       //Real chopper period (ms). A factor "1/2" is necessary for Fermi chopper
+    var ChopPeriod = ChopPeriod_R*TOFscale;
+    var ChopRept = TOF_len_R/ChopPeriod_R;
 
-    var temp = document.getElementById('offset');
-    var ChopOfst = Number(temp.value)*10;
+    var TargetEi = Number(document.getElementById('targetEi').value);
+    var TargetTOF_at_Chopper=(TOFconst*(Lsc_R)/Math.sqrt(TargetEi));
+
+    var ChopOfst_R =0;      //Real chopper offset (ms)
+
+    var isOptimumWindow = new Array(ChopRept);
+
+    for (var tt=0;tt<=ChopRept;tt+=2){
+        var t1=(tt)*ChopPeriod_R;
+        var t2=(tt+1.0)*ChopPeriod_R;
+        var t3=(tt+2.0)*ChopPeriod_R;
+
+        if ((TargetTOF_at_Chopper > t1) && (TargetTOF_at_Chopper <= t2) ){
+            ChopOfst_R=TargetTOF_at_Chopper-t2;
+            for (var uu=0;uu<ChopRept;uu+=2){
+                isOptimumWindow[uu]=true;
+                isOptimumWindow[uu+1]=false;
+            }
+        }
+        else if((TargetTOF_at_Chopper > t2) && (TargetTOF_at_Chopper <= t3) ){
+            ChopOfst_R=TargetTOF_at_Chopper-t2;
+            for (var uu=0;uu<ChopRept;uu+=2){
+                isOptimumWindow[uu]=false;
+                isOptimumWindow[uu+1]=true;
+            }
+        }
+    }
+
+    if(ChopOfst_R>0){
+        document.getElementById('offset').value=Math.round(ChopOfst_R*decimal_digit)/decimal_digit;
+    }
+    else {
+        document.getElementById('offset').value=Math.round((ChopOfst_R+ChopPeriod_R*2.0)*decimal_digit)/decimal_digit;        // Chopper offset value should be positive. 
+    }
+    var ChopOfst = ChopOfst_R*TOFscale;
 
     var temp = document.getElementById('Ei_Num_ofst');
     var Ei_num_ofst = Number(temp.value);
@@ -55,15 +100,15 @@ function draw_TOF(){
 
     //text labels
     context2.font = "italic 10px sans-serif";
-    context2.fillText("Chopper", 1, marginY+Ltotal-Lsc+TextSize/2);
-    context2.fillText("Sample", 1, marginY+Ltotal-L1+TextSize/2);
-    context2.fillText("Source", 1, marginY+Ltotal+TextSize/2);
+    context2.fillText("Chopper", 1, marginY+(Ltotal-Lsc)+TextSize/2);
+    context2.fillText("Sample", 1, marginY+(Ltotal-L1)+TextSize/2);
+    context2.fillText("Source", 1, marginY+(Ltotal)+TextSize/2);
     context2.fillText("Detector", 1, marginY+TextSize/2);
 
 
     // x axis
     context2.beginPath();
-    context2.moveTo(marginX, Ltotal+marginY);
+    context2.moveTo(marginX, (Ltotal)+marginY);
     context2.lineTo(marginX, marginY);
     context2.stroke();
 
@@ -106,38 +151,68 @@ function draw_TOF(){
     context2.strokeStyle = "rgb(100, 100, 100)";
     context2.beginPath();
     context2.moveTo(marginX, Ltotal+marginY-Lsc);
-    context2.lineTo(marginX+ChopPeriod-ChopperOpen/2-ChopOfst, Ltotal+marginY-Lsc);
-    context2.stroke();
-    TOF_at_Chopper[0]=(ChopPeriod-ChopOfst)/10.0;
-
-    for (var i = 1; i < ChopRept; i += 1) {
-        context2.beginPath();
-        context2.moveTo(marginX+ChopPeriod*i+ChopperOpen/2-ChopOfst, Ltotal+marginY-Lsc);
-        context2.lineTo(marginX+ChopPeriod*(i+1)-ChopperOpen/2-ChopOfst, Ltotal+marginY-Lsc);
+    if(isOptimumWindow[0]==true){
+        context2.lineTo(marginX+ChopPeriod-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
         context2.stroke();
-        TOF_at_Chopper[i]=(ChopPeriod*(i+1)-ChopOfst)/10.0;
+        TOF_at_Chopper[0]=(ChopPeriod+ChopOfst)/10.0;    
+    }
+    else {
+        context2.lineTo(marginX-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+        context2.stroke();
+        TOF_at_Chopper[0]=(ChopOfst)/10.0;    
     }
 
-    document.getElementById('E1').value = Math.round((22.86/TOF_at_Chopper[Ei_num_ofst]*1.4)**2.0*decimal_digit)/decimal_digit ;
-    Ei[0]=(22.86/TOF_at_Chopper[Ei_num_ofst]*1.4)**2.0 ;
-    document.getElementById('E2').value = Math.round((22.86/TOF_at_Chopper[Ei_num_ofst+1]*1.4)**2.0*decimal_digit)/decimal_digit ;
-    Ei[1]=(22.86/TOF_at_Chopper[Ei_num_ofst+1]*1.4)**2.0 ;
-    document.getElementById('E3').value = Math.round((22.86/TOF_at_Chopper[Ei_num_ofst+2]*1.4)**2.0*decimal_digit)/decimal_digit ;
-    Ei[2]=(22.86/TOF_at_Chopper[Ei_num_ofst+2]*1.4)**2.0 ;
-    document.getElementById('E4').value = Math.round((22.86/TOF_at_Chopper[Ei_num_ofst+3]*1.4)**2.0*decimal_digit)/decimal_digit ;
-    Ei[3]=(22.86/TOF_at_Chopper[Ei_num_ofst+3]*1.4)**2.0 ;
-    document.getElementById('E5').value = Math.round((22.86/TOF_at_Chopper[Ei_num_ofst+4]*1.4)**2.0*decimal_digit)/decimal_digit ;
-    Ei[4]=(22.86/TOF_at_Chopper[Ei_num_ofst+4]*1.4)**2.0 ;
+    for (var i = 1; i < ChopRept; i += 1) {
+        if(isOptimumWindow[0]==true){
+            context2.beginPath();
+            context2.moveTo(marginX+ChopPeriod*i+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+            context2.lineTo(marginX+ChopPeriod*(i+1)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+            context2.stroke();
+            TOF_at_Chopper[i]=(ChopPeriod*(i+1)+ChopOfst)/10.0;    
+        }
+        else{
+            context2.beginPath();
+            context2.moveTo(marginX+ChopPeriod*(i-1)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+            context2.lineTo(marginX+ChopPeriod*(i)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+            context2.stroke();
+            TOF_at_Chopper[i]=(ChopPeriod*(i)+ChopOfst)/10.0;    
+        }
+    }
+
+    // Determine Ei num offset
+    Ei_num_ofst=0;
+    for (var i=0;i<ChopRept;i+=1){
+        var testE =(TOFconst/TOF_at_Chopper[i]*(Lsc_R))**2.0 ;
+        if (testE > upperLimitEi){
+            Ei_num_ofst += 1;
+        }    
+    }
+    document.getElementById('Ei_Num_ofst').value=Ei_num_ofst;
+
+    for(var i=0;i<Ei_numMax;i+=1){
+        idE='E'+(i+1);
+        document.getElementById(idE).value = Math.round((TOFconst/TOF_at_Chopper[Ei_num_ofst+i]*(Lsc_R))**2.0*decimal_digit)/decimal_digit ;
+        Ei[i]=(TOFconst/TOF_at_Chopper[Ei_num_ofst+i]*(Lsc_R))**2.0 ;
+        isOptimumEi[i]=isOptimumWindow[Ei_num_ofst+i];
+    }
 
     context2.lineWidth=1;
     for (var i = 0; i < Ei_numMax; i += 1) {
-        context2.strokeStyle = "rgb(255, 0, 0)";
+        if (isOptimumEi[i]==true){
+            context2.strokeStyle = "rgb(255, 0, 0)";
+            context2.lineWidth=2;
+        }
+        else {
+            context2.strokeStyle = "rgb(255, 150, 150)";
+            context2.lineWidth=1;
+        }
         context2.beginPath();
         context2.moveTo(marginX, marginY+Ltotal);
 //        context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*10.0*Ltotal/Lsc, marginY);
         context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*10.0*Ltotal/Lsc, marginY);
         context2.stroke();
     }
+    context2.lineWidth=1;
 
 }
 

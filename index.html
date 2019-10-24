@@ -52,10 +52,11 @@
                     <option value="500">500 Hz</option>
                     <option value="600">600 Hz</option>
                 </select> <br />
-                phase offset : <input type="text" size="5" id="offset" value="0"> ms<br />
-                <i>E</i><sub>i</sub> number offset : <input type="text" size="5" id="Ei_Num_ofst" value="0"><br />
+                Target <i>E</i><sub>i</sub> : <input type="text" size="5" id="targetEi" value="20"> meV <br />
                 <input type="button" value="   set   " onclick="draw()"/><br />
                 <br />
+                <i>E</i><sub>i</sub> number offset : <input type="text" size="5" id="Ei_Num_ofst" value="0"> (for plotting)<br />
+                phase offset : <input type="text" size="8" id="offset" value="0"> ms<br />
                 <i>E</i><sub>i(1)</sub>:<input size="10" id="E1"> meV<br />
                 <i>E</i><sub>i(2)</sub>:<input size="10" id="E2"> meV<br />
                 <i>E</i><sub>i(3)</sub>:<input size="10" id="E3"> meV<br />
