@@ -47,6 +47,8 @@ function draw_TOF(){
     var canvas2 = document.getElementById('CanvasTOF');
     var context2 = canvas2.getContext('2d');
 
+    var chopperFace = Boolean(Number(document.getElementById('chopperFace').value));
+
     var freq = Number(document.getElementById('freq').value);
     var ChopPeriod_R = 1.0/freq*1000.0/2;       //Real chopper period (ms). A factor "1/2" is necessary for Fermi chopper
     var ChopPeriod = ChopPeriod_R*TOFscale;
@@ -65,14 +67,14 @@ function draw_TOF(){
         var t3=(tt+2.0)*ChopPeriod_R;
 
         if ((TargetTOF_at_Chopper > t1) && (TargetTOF_at_Chopper <= t2) ){
-            ChopOfst_R=TargetTOF_at_Chopper-t2;
+            ChopOfst_R=TargetTOF_at_Chopper-t1;
             for (var uu=0;uu<ChopRept;uu+=2){
                 isOptimumWindow[uu]=true;
                 isOptimumWindow[uu+1]=false;
             }
         }
         else if((TargetTOF_at_Chopper > t2) && (TargetTOF_at_Chopper <= t3) ){
-            ChopOfst_R=TargetTOF_at_Chopper-t2;
+            ChopOfst_R=TargetTOF_at_Chopper-t3;
             for (var uu=0;uu<ChopRept;uu+=2){
                 isOptimumWindow[uu]=false;
                 isOptimumWindow[uu+1]=true;
@@ -80,12 +82,29 @@ function draw_TOF(){
         }
     }
 
-    if(ChopOfst_R>0){
-        document.getElementById('offset').value=Math.round(ChopOfst_R*decimal_digit)/decimal_digit;
+    var displayChopperOfst = ChopOfst_R;
+    if (chopperFace == true){
+        displayChopperOfst +=0;
     }
     else {
-        document.getElementById('offset').value=Math.round((ChopOfst_R+ChopPeriod_R*2.0)*decimal_digit)/decimal_digit;        // Chopper offset value should be positive. 
+        displayChopperOfst += ChopPeriod_R;       // Another half rotation is necessary to have optimum condition for the target Ei
     }
+
+    if(displayChopperOfst<0){
+        displayChopperOfst += ChopPeriod_R*2.0;
+    }
+    else if(displayChopperOfst>ChopPeriod_R*2.0){
+        displayChopperOfst -= ChopPeriod_R*2.0;
+    }
+
+    document.getElementById('offset').value=Math.round(displayChopperOfst*decimal_digit)/decimal_digit;
+
+//    if(ChopOfst_R>0){
+//        document.getElementById('offset').value=Math.round(ChopOfst_R*decimal_digit)/decimal_digit;
+//    }
+//    else {
+//        document.getElementById('offset').value=Math.round((ChopOfst_R+ChopPeriod_R*2.0)*decimal_digit)/decimal_digit;        // Display value of chopper offset should be positive. 
+//    }
     var ChopOfst = ChopOfst_R*TOFscale;
 
     var temp = document.getElementById('Ei_Num_ofst');
@@ -151,31 +170,31 @@ function draw_TOF(){
     context2.strokeStyle = "rgb(100, 100, 100)";
     context2.beginPath();
     context2.moveTo(marginX, Ltotal+marginY-Lsc);
-    if(isOptimumWindow[0]==true){
-        context2.lineTo(marginX+ChopPeriod-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-        context2.stroke();
-        TOF_at_Chopper[0]=(ChopPeriod+ChopOfst)/10.0;    
-    }
-    else {
+    if(isOptimumWindow[0]==true){       //ChopOfst >0
         context2.lineTo(marginX-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
         context2.stroke();
         TOF_at_Chopper[0]=(ChopOfst)/10.0;    
+    }
+    else {      //ChopOfst<0
+        context2.lineTo(marginX+ChopPeriod-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+        context2.stroke();
+        TOF_at_Chopper[0]=(ChopPeriod+ChopOfst)/10.0;    
     }
 
     for (var i = 1; i < ChopRept; i += 1) {
         if(isOptimumWindow[0]==true){
             context2.beginPath();
-            context2.moveTo(marginX+ChopPeriod*i+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-            context2.lineTo(marginX+ChopPeriod*(i+1)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-            context2.stroke();
-            TOF_at_Chopper[i]=(ChopPeriod*(i+1)+ChopOfst)/10.0;    
-        }
-        else{
-            context2.beginPath();
             context2.moveTo(marginX+ChopPeriod*(i-1)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
             context2.lineTo(marginX+ChopPeriod*(i)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
             context2.stroke();
             TOF_at_Chopper[i]=(ChopPeriod*(i)+ChopOfst)/10.0;    
+        }
+        else{
+            context2.beginPath();
+            context2.moveTo(marginX+ChopPeriod*(i)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+            context2.lineTo(marginX+ChopPeriod*(i+1)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+            context2.stroke();
+            TOF_at_Chopper[i]=(ChopPeriod*(i+1)+ChopOfst)/10.0;    
         }
     }
 
@@ -190,10 +209,18 @@ function draw_TOF(){
     document.getElementById('Ei_Num_ofst').value=Ei_num_ofst;
 
     for(var i=0;i<Ei_numMax;i+=1){
-        idE='E'+(i+1);
+        var idE='E'+(i+1);
         document.getElementById(idE).value = Math.round((TOFconst/TOF_at_Chopper[Ei_num_ofst+i]*(Lsc_R))**2.0*decimal_digit)/decimal_digit ;
         Ei[i]=(TOFconst/TOF_at_Chopper[Ei_num_ofst+i]*(Lsc_R))**2.0 ;
         isOptimumEi[i]=isOptimumWindow[Ei_num_ofst+i];
+        if (isOptimumEi[i]==true){
+            var idIsOptium ='isE'+(i+1)+'Optimum';
+            document.getElementById(idIsOptium).innerHTML = '(Optimum)' ;
+        }
+        else {
+            var idIsOptium ='isE'+(i+1)+'Optimum';
+            document.getElementById(idIsOptium).innerHTML = '' ;
+        }
     }
 
     context2.lineWidth=1;

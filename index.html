@@ -1,5 +1,5 @@
 <head>
-<title >Accessible Q-E range of HRC(BL12) ver 0.1</title>
+<title >Accessible Q-E range of HRC(BL12) ver 0.2</title>
 <link rel="stylesheet" type="text/css" href="./common.css">
 <script type="text/javascript" src="./draw.js"></script>
 </head>
@@ -7,7 +7,7 @@
     <div class="fullbox">
     <table class="header_table">
         <tr>
-            <td ><font class="mytitle">Accessible Q-E range of HRC(BL12)</font> <font color="white">ver 0.1</font></td>
+            <td ><font class="mytitle">Accessible Q-E range of HRC(BL12)</font> <font color="white">ver 0.2</font></td>
             <td class="menu_item"><a href="#sec_TOF">TOF diagram</a></td>
             <td class="menu_item"><a href="#sec_constE">Constant-E cuts</a></td>
             <td >-----</td>
@@ -43,7 +43,12 @@
             <canvas id="CanvasTOF" width="500" height="280"></canvas><br />
             </td>
             <td>
-                Fermi chopper freq. 
+                Chopper face at t=0 :
+                <select id="chopperFace">
+                    <option value="1">Front</option>
+                    <option value="0">Back</option>
+                </select> <br />
+                Fermi chopper freq. :
                 <select id="freq">
                     <option value="100">100 Hz</option>
                     <option value="200">200 Hz</option>
@@ -57,11 +62,11 @@
                 <br />
                 <i>E</i><sub>i</sub> number offset : <input type="text" size="5" id="Ei_Num_ofst" value="0"> (for plotting)<br />
                 phase offset : <input type="text" size="8" id="offset" value="0"> ms<br />
-                <i>E</i><sub>i(1)</sub>:<input size="10" id="E1"> meV<br />
-                <i>E</i><sub>i(2)</sub>:<input size="10" id="E2"> meV<br />
-                <i>E</i><sub>i(3)</sub>:<input size="10" id="E3"> meV<br />
-                <i>E</i><sub>i(4)</sub>:<input size="10" id="E4"> meV<br />
-                <i>E</i><sub>i(5)</sub>:<input size="10" id="E5"> meV
+                <i>E</i><sub>i(1)</sub>:<input size="10" id="E1"> meV <font color="#FF0000" id="isE1Optimum"></font> <br />
+                <i>E</i><sub>i(2)</sub>:<input size="10" id="E2"> meV <font color="#FF0000" id="isE2Optimum"></font><br />
+                <i>E</i><sub>i(3)</sub>:<input size="10" id="E3"> meV <font color="#FF0000" id="isE3Optimum"></font><br />
+                <i>E</i><sub>i(4)</sub>:<input size="10" id="E4"> meV <font color="#FF0000" id="isE4Optimum"></font><br />
+                <i>E</i><sub>i(5)</sub>:<input size="10" id="E5"> meV <font color="#FF0000" id="isE5Optimum"></font>
             </td>
         </tr>
     </table>
