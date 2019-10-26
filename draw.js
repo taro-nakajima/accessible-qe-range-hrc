@@ -173,12 +173,12 @@ function draw_TOF(){
     if(isOptimumWindow[0]==true){       //ChopOfst >0
         context2.lineTo(marginX-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
         context2.stroke();
-        TOF_at_Chopper[0]=(ChopOfst)/10.0;    
+        TOF_at_Chopper[0]=(ChopOfst_R);    
     }
     else {      //ChopOfst<0
         context2.lineTo(marginX+ChopPeriod-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
         context2.stroke();
-        TOF_at_Chopper[0]=(ChopPeriod+ChopOfst)/10.0;    
+        TOF_at_Chopper[0]=(ChopPeriod_R+ChopOfst_R);    
     }
 
     for (var i = 1; i < ChopRept; i += 1) {
@@ -187,14 +187,14 @@ function draw_TOF(){
             context2.moveTo(marginX+ChopPeriod*(i-1)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
             context2.lineTo(marginX+ChopPeriod*(i)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
             context2.stroke();
-            TOF_at_Chopper[i]=(ChopPeriod*(i)+ChopOfst)/10.0;    
+            TOF_at_Chopper[i]=(ChopPeriod_R*(i)+ChopOfst_R);    
         }
         else{
             context2.beginPath();
             context2.moveTo(marginX+ChopPeriod*(i)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
             context2.lineTo(marginX+ChopPeriod*(i+1)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
             context2.stroke();
-            TOF_at_Chopper[i]=(ChopPeriod*(i+1)+ChopOfst)/10.0;    
+            TOF_at_Chopper[i]=(ChopPeriod_R*(i+1)+ChopOfst_R);    
         }
     }
 
@@ -236,7 +236,7 @@ function draw_TOF(){
         context2.beginPath();
         context2.moveTo(marginX, marginY+Ltotal);
 //        context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*10.0*Ltotal/Lsc, marginY);
-        context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*10.0*Ltotal/Lsc, marginY);
+        context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*TOFscale*Ltotal/Lsc, marginY);
         context2.stroke();
     }
     context2.lineWidth=1;
