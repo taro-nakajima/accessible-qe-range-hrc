@@ -235,7 +235,6 @@ function draw_TOF(){
         }
         context2.beginPath();
         context2.moveTo(marginX, marginY+Ltotal);
-//        context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*10.0*Ltotal/Lsc, marginY);
         context2.lineTo(marginX+TOF_at_Chopper[Ei_num_ofst+i]*TOFscale*Ltotal/Lsc, marginY);
         context2.stroke();
     }
