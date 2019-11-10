@@ -325,11 +325,12 @@ function draw_Qxy(){
 
 
     //accessible area
-    var cosOmg1 = Math.cos(Math.PI/180.0*omg1);
-    var sinOmg1 = Math.sin(Math.PI/180.0*omg1);
+    //CCW rotation of sample -> CW rotation of accessible range (omg -> -omg)
+    var cosOmg1 = Math.cos(-Math.PI/180.0*omg1);
+    var sinOmg1 = Math.sin(-Math.PI/180.0*omg1);
 
-    var cosOmg2 = Math.cos(Math.PI/180.0*omg2);
-    var sinOmg2 = Math.sin(Math.PI/180.0*omg2);
+    var cosOmg2 = Math.cos(-Math.PI/180.0*omg2);
+    var sinOmg2 = Math.sin(-Math.PI/180.0*omg2);
 
 
     for(var p=0;p<5;p+=1){
@@ -375,8 +376,8 @@ function draw_Qxy(){
             var dX=(Math.cos(Math.PI/180.0*tth_Max[i_tth])*kf-1.0*ki[p])*scale[p];
             var dY=(Math.sin(Math.PI/180.0*tth_Max[i_tth]))*kf*scale[p];
 
-            var tempX = Math.cos(Math.PI/180.0*omg)*dX - Math.sin(Math.PI/180.0*omg)*dY;
-            var tempY = Math.sin(Math.PI/180.0*omg)*dX + Math.cos(Math.PI/180.0*omg)*dY;
+            var tempX = Math.cos(-Math.PI/180.0*omg)*dX - Math.sin(-Math.PI/180.0*omg)*dY;
+            var tempY = Math.sin(-Math.PI/180.0*omg)*dX + Math.cos(-Math.PI/180.0*omg)*dY;
 
             var dX = tempX;
             var dY = tempY;
@@ -398,8 +399,8 @@ function draw_Qxy(){
             var dX=(Math.cos(Math.PI/180.0*tth_Min[i_tth])*kf-1.0*ki[p])*scale[p];
             var dY=(Math.sin(Math.PI/180.0*tth_Min[i_tth]))*kf*scale[p];
 
-            var tempX = Math.cos(Math.PI/180.0*omg)*dX - Math.sin(Math.PI/180.0*omg)*dY;
-            var tempY = Math.sin(Math.PI/180.0*omg)*dX + Math.cos(Math.PI/180.0*omg)*dY;
+            var tempX = Math.cos(-Math.PI/180.0*omg)*dX - Math.sin(-Math.PI/180.0*omg)*dY;
+            var tempY = Math.sin(-Math.PI/180.0*omg)*dX + Math.cos(-Math.PI/180.0*omg)*dY;
 
             var dX = tempX;
             var dY = tempY;
