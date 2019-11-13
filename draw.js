@@ -57,6 +57,8 @@ function draw_TOF(){
     var TargetEi = Number(document.getElementById('targetEi').value);
     var TargetTOF_at_Chopper=(TOFconst*(Lsc_R)/Math.sqrt(TargetEi));
 
+    upperLimitEi = Number(document.getElementById('upperLimitEi').value);
+
     var ChopOfst_R =0;      //Real chopper offset (ms)
 
     var isOptimumWindow = new Array(ChopRept);

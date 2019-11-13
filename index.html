@@ -1,13 +1,13 @@
 <head>
-<title >Accessible Q-E range of HRC(BL12) ver 0.4</title>
+<title >Accessible Q-E range of HRC(BL12) ver 0.5</title>
 <link rel="stylesheet" type="text/css" href="./common.css">
-<script type="text/javascript" src="./draw.js?20191110"></script>
+<script type="text/javascript" src="./draw.js?20191113"></script>
 </head>
 <body onload="draw()">
     <div class="fullbox">
     <table class="header_table">
         <tr>
-            <td ><font class="mytitle">Accessible Q-E range of HRC(BL12)</font> <font color="white">ver 0.4</font></td>
+            <td ><font class="mytitle">Accessible Q-E range of HRC(BL12)</font> <font color="white">ver 0.5</font></td>
             <td class="menu_item"><a href="#sec_TOF">TOF diagram</a></td>
             <td class="menu_item"><a href="#sec_constE">Constant-E cuts</a></td>
             <td class="menu_item"><a href="#sec_definitions">Definitions</a></td>
@@ -59,6 +59,7 @@
                     <option value="600">600 Hz</option>
                 </select> <br />
                 Target <i>E</i><sub>i</sub> : <input type="text" size="5" id="targetEi" value="20"> meV <br />
+                Upper limit of <i>E</i><sub>i</sub> : <input type="text" size="5" id="upperLimitEi" value="8000"> meV <br />
                 <input type="button" value="   set   " onclick="draw()"/><br />
                 <br />
                 <i>E</i><sub>i</sub> number offset : <input type="text" size="5" id="Ei_Num_ofst" value="0"> (for plotting)<br />
@@ -68,6 +69,7 @@
                 <i>E</i><sub>i(3)</sub>:<input size="10" id="E3"> meV <font color="#FF0000" id="isE3Optimum"></font><br />
                 <i>E</i><sub>i(4)</sub>:<input size="10" id="E4"> meV <font color="#FF0000" id="isE4Optimum"></font><br />
                 <i>E</i><sub>i(5)</sub>:<input size="10" id="E5"> meV <font color="#FF0000" id="isE5Optimum"></font>
+
             </td>
         </tr>
     </table>
@@ -153,6 +155,6 @@ Omega angle : from <input type="text" size="5" id="omega1" value="0"> to <input 
 <img src="HRC_layout_v3.png"><br />
 (Cited from S. Itoh and Y. Endo JPSJ <b>88</b>, 081004 (2019), and modified from the original version. )
 
-<div class="footer"> Version 0.4 by T. Nakajima, 2019.</div>
+<div class="footer"> Version 0.5 by T. Nakajima, 2019.</div>
 </div> <!--end of mainbody-->
 </body>
