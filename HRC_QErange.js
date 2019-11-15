@@ -267,6 +267,11 @@ function draw_Qxy(){
 
     var omg1 = Number(document.getElementById('omega1').value);
     var omg2 = Number(document.getElementById('omega2').value);
+    if (omg2 < omg1){
+        var temp_omg2 = omg2;
+        omg2=omg1;
+        omg1=temp_omg2;
+    }
 
     var a_star = Number(document.getElementById('a_star').value);
     var b_star = Number(document.getElementById('b_star').value);
