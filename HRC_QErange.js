@@ -1,15 +1,18 @@
 //JavaScript code for calculating accessible Q-E ranges for HRC
 // programed by T. Nakajima (ISSP-NSL) Oct. 20, 2019.
+var version = "0.7";
 var Ei_numMax=5;
 var Ei = new Array(Ei_numMax);
 var decimal_digit = 1000;
-var isOptimumEi= new Array(Ei_numMax);
+var isOptimumEi= (new Array(Ei_numMax)).fill(true);
 
 var DetBankNum = 4;
 var tth_Max = new Array(DetBankNum);
 var tth_Min = new Array(DetBankNum);
 
 var eps=1e-6;
+
+var T0_Chop_Const = 77.0/(2.0*Math.PI*300.0)*1000;     // (ms/Hz) cited from S. Itoh et al. Nuc. Inst. Methods in Phys. Research A61 86-92 (2012).
 
 
 function draw() {
@@ -23,6 +26,8 @@ function draw() {
 
 function draw_TOF(){
 
+    document.getElementById("verNum").innerHTML=version;
+    document.getElementById("verNum2").innerHTML=version;
     var marginX = 50;
     var marginY = 20;
 
@@ -32,10 +37,12 @@ function draw_TOF(){
     var inputL1 = Number(document.getElementById('input_L1').value);
     var inputL2 = Number(document.getElementById('input_L2').value);
     var inputL3 = Number(document.getElementById('input_L3').value);
+    var inputLT0 = Number(document.getElementById('input_LT0').value);
 
     var Ltotal_R = inputL1+inputL2;      // Real source to detector (m)
     var Lsc_R = inputL1-inputL3;        // Real sample chopper distance  (m)
     var L1_R = inputL1;          // Real source to sample distance (m)
+    var LT0_R = inputLT0;        // Real source to T0 distance (m)
     var TOF_len_R = 40;       // Real TOF max (ms)
     var TOFconst = 2.286;       // TOF at 1 m is 2.286/sqrt(E)
     var upperLimitEi = 8000;    // upper limit of Ei 8eV
@@ -43,6 +50,7 @@ function draw_TOF(){
     var Ltotal=Ltotal_R*Lscale;
     var Lsc = Lsc_R*Lscale;
     var L1 = L1_R*Lscale;
+    var LT0 = LT0_R*Lscale; 
     var TOF_len = TOF_len_R*TOFscale;
 
     var TextSize = 10;      // pixel
@@ -60,9 +68,16 @@ function draw_TOF(){
     var chopperFace = Boolean(Number(document.getElementById('chopperFace').value));
 
     var freq = Number(document.getElementById('freq').value);
-    var ChopPeriod_R = 1.0/freq*1000.0/2;       //Real chopper period (ms). A factor "1/2" is necessary for Fermi chopper
+    var ChopPeriod_R = 1.0/freq*1000.0;       //Real chopper period (ms). Although a factor "1/2" is necessary for Fermi choppers with straight slits, the chopper of HRC has curved slits. So 1/2 is not necessary.
     var ChopPeriod = ChopPeriod_R*TOFscale;
     var ChopRept = TOF_len_R/ChopPeriod_R;
+
+    var T0_freq = Number(document.getElementById('T0_freq').value);
+    var T0ChopPeriod_R = 1.0/T0_freq*1000.0/2;    //Real T0 chopper period (ms). A factor "1/2" is necessary for a symmetric rotor.
+    var T0ChopPeriod = T0ChopPeriod_R*TOFscale;
+    var T0ChopRept = TOF_len_R/T0ChopPeriod_R;
+    var T0_Blind_R = T0_Chop_Const/T0_freq;
+    var T0_Blind = T0_Blind_R*TOFscale;
 
     var TargetEi = Number(document.getElementById('targetEi').value);
     var TargetTOF_at_Chopper=(TOFconst*(Lsc_R)/Math.sqrt(TargetEi));
@@ -71,26 +86,14 @@ function draw_TOF(){
 
     var ChopOfst_R =0;      //Real chopper offset (ms)
 
-    var isOptimumWindow = new Array(ChopRept);
+//    var isOptimumWindow = new Array(ChopRept);
 
-    for (var tt=0;tt<=ChopRept;tt+=2){
+    for (var tt=0;tt<=ChopRept;tt+=1){
         var t1=(tt)*ChopPeriod_R;
         var t2=(tt+1.0)*ChopPeriod_R;
-        var t3=(tt+2.0)*ChopPeriod_R;
 
         if ((TargetTOF_at_Chopper > t1) && (TargetTOF_at_Chopper <= t2) ){
             ChopOfst_R=TargetTOF_at_Chopper-t1;
-            for (var uu=0;uu<ChopRept;uu+=2){
-                isOptimumWindow[uu]=true;
-                isOptimumWindow[uu+1]=false;
-            }
-        }
-        else if((TargetTOF_at_Chopper > t2) && (TargetTOF_at_Chopper <= t3) ){
-            ChopOfst_R=TargetTOF_at_Chopper-t3;
-            for (var uu=0;uu<ChopRept;uu+=2){
-                isOptimumWindow[uu]=false;
-                isOptimumWindow[uu+1]=true;
-            }
         }
     }
 
@@ -99,14 +102,7 @@ function draw_TOF(){
         displayChopperOfst +=0;
     }
     else {
-        displayChopperOfst += ChopPeriod_R;       // Another half rotation is necessary to have optimum condition for the target Ei
-    }
-
-    if(displayChopperOfst<0){
-        displayChopperOfst += ChopPeriod_R*2.0;
-    }
-    else if(displayChopperOfst>ChopPeriod_R*2.0){
-        displayChopperOfst -= ChopPeriod_R*2.0;
+        displayChopperOfst += ChopPeriod_R/2.0;       // Another half rotation is necessary to have optimum condition for the target Ei
     }
 
     document.getElementById('offset').value=Math.round(displayChopperOfst*decimal_digit)/decimal_digit;
@@ -129,6 +125,7 @@ function draw_TOF(){
     context2.fillText("Sample", 1, marginY+(Ltotal-L1)+TextSize/2);
     context2.fillText("Source", 1, marginY+(Ltotal)+TextSize/2);
     context2.fillText("Detector", 1, marginY+TextSize/2);
+    context2.fillText("T0 Ch.", 1, marginY+(Ltotal-LT0)+TextSize/2);
 
 
     // x axis
@@ -171,37 +168,21 @@ function draw_TOF(){
     context2.stroke();
 
 
-    //chopper
+    //Fermi chopper
     context2.lineWidth=4;
     context2.strokeStyle = "rgb(100, 100, 100)";
     context2.beginPath();
     context2.moveTo(marginX, Ltotal+marginY-Lsc);
-    if(isOptimumWindow[0]==true){       //ChopOfst >0
-        context2.lineTo(marginX-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-        context2.stroke();
-        TOF_at_Chopper[0]=(ChopOfst_R);    
-    }
-    else {      //ChopOfst<0
-        context2.lineTo(marginX+ChopPeriod-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-        context2.stroke();
-        TOF_at_Chopper[0]=(ChopPeriod_R+ChopOfst_R);    
-    }
+    context2.lineTo(marginX-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+    context2.stroke();
+    TOF_at_Chopper[0]=(ChopOfst_R);    
 
     for (var i = 1; i < ChopRept; i += 1) {
-        if(isOptimumWindow[0]==true){
-            context2.beginPath();
-            context2.moveTo(marginX+ChopPeriod*(i-1)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-            context2.lineTo(marginX+ChopPeriod*(i)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-            context2.stroke();
-            TOF_at_Chopper[i]=(ChopPeriod_R*(i)+ChopOfst_R);    
-        }
-        else{
-            context2.beginPath();
-            context2.moveTo(marginX+ChopPeriod*(i)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-            context2.lineTo(marginX+ChopPeriod*(i+1)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
-            context2.stroke();
-            TOF_at_Chopper[i]=(ChopPeriod_R*(i+1)+ChopOfst_R);    
-        }
+        context2.beginPath();
+        context2.moveTo(marginX+ChopPeriod*(i-1)+ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+        context2.lineTo(marginX+ChopPeriod*(i)-ChopperOpen/2+ChopOfst, Ltotal+marginY-Lsc);
+        context2.stroke();
+        TOF_at_Chopper[i]=(ChopPeriod_R*(i)+ChopOfst_R);    
     }
 
     // Determine Ei num offset
@@ -218,17 +199,48 @@ function draw_TOF(){
         var idE='E'+(i+1);
         document.getElementById(idE).value = Math.round((TOFconst/TOF_at_Chopper[Ei_num_ofst+i]*(Lsc_R))**2.0*decimal_digit)/decimal_digit ;
         Ei[i]=(TOFconst/TOF_at_Chopper[Ei_num_ofst+i]*(Lsc_R))**2.0 ;
-        isOptimumEi[i]=isOptimumWindow[Ei_num_ofst+i];
-        if (isOptimumEi[i]==true){
-            var idIsOptium ='isE'+(i+1)+'Optimum';
-            document.getElementById(idIsOptium).innerHTML = '(Optimum)' ;
-        }
-        else {
-            var idIsOptium ='isE'+(i+1)+'Optimum';
-            document.getElementById(idIsOptium).innerHTML = '' ;
-        }
     }
 
+
+    //T0 chopper
+    for (i=0;i<Ei_numMax;i+=1){
+        isOptimumEi[i]=true;
+    }
+    context2.lineWidth=6;
+    context2.strokeStyle = "rgb(100, 100, 100)";
+    context2.beginPath();
+    context2.moveTo(marginX, Ltotal+marginY-LT0);
+    context2.lineTo(marginX+T0_Blind, Ltotal+marginY-LT0);
+    context2.stroke();
+    var T0_blind_start = 0;
+    var T0_blind_end = T0_Blind_R;
+    var TOF_at_T0 = TOF_at_Chopper[Ei_num_ofst]/Lsc*LT0;
+    if(TOF_at_T0>T0_blind_start && TOF_at_T0<T0_blind_end){
+        isOptimumEi[0]=false;
+    }
+
+//
+
+    for (var i = 1; i <= T0ChopRept; i += 1) {
+        context2.beginPath();
+        context2.moveTo(marginX+T0ChopPeriod*(i)-T0_Blind, Ltotal+marginY-LT0);
+        context2.lineTo(marginX+T0ChopPeriod*(i)+T0_Blind, Ltotal+marginY-LT0);
+        context2.stroke();
+        T0_blind_start = T0ChopPeriod_R*(i)-T0_Blind_R;
+        T0_blind_end = T0ChopPeriod_R*(i)+T0_Blind_R;
+
+        for (var j=0;j<Ei_numMax;j+=1){
+            TOF_at_T0 = TOF_at_Chopper[Ei_num_ofst+j]/Lsc*LT0;
+            if(TOF_at_T0>T0_blind_start && TOF_at_T0<T0_blind_end){
+                isOptimumEi[j]=false;
+            }
+
+        }
+    }
+//
+
+
+    //Lines for each Ei
     context2.lineWidth=1;
     for (var i = 0; i < Ei_numMax; i += 1) {
         if (isOptimumEi[i]==true){

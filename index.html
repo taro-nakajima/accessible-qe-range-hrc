@@ -8,15 +8,15 @@
 
   gtag('config', 'UA-153566682-2');
 </script>
-<title >Accessible Q-E range of HRC(BL12) ver 0.6</title>
+<title >Accessible Q-E range of HRC(BL12)</title>
 <link rel="stylesheet" type="text/css" href="./common.css">
-<script type="text/javascript" src="./HRC_QErange.js?20191122"></script>
+<script type="text/javascript" src="./HRC_QErange.js?20191123"></script>
 </head>
 <body onload="draw()">
     <div class="fullbox">
     <table class="header_table">
         <tr>
-            <td ><font class="mytitle">Accessible Q-E range of HRC(BL12)</font> <font color="white">ver 0.6</font></td>
+            <td ><font class="mytitle">Accessible Q-E range of HRC(BL12)</font> <font color="white">ver</font> <font color="white" id="verNum"></font></td>
             <td class="menu_item"><a href="#sec_Inst" class="headerLink">Instrument</a></td>
             <td class="menu_item"><a href="#sec_TOF" class="headerLink">TOF diagram</a></td>
             <td class="menu_item"><a href="#sec_QEcuts" class="headerLink">Q-E cuts</a></td>
@@ -39,9 +39,10 @@
             L<sub>1</sub> (moderator to sample) : <input type="text" size="5" id="input_L1" value="15.0"> m <br />
             L<sub>2</sub> (sample to detector) : <input type="text" size="5" id="input_L2" value="4.0"> m <br />
             L<sub>3</sub> (monochro chopper to sample) : <input type="text" size="5" id="input_L3" value="1.03"> m <br />
+            L<sub>T0</sub> (moderator to T<sub>0</sub> chopper) : <input type="text" size="5" id="input_LT0" value="9.0"> m <br />
             <input type="button" value="   set   " onclick="draw()"/><br />
-            <img src="HRC_layout_v4.png"><br />
-            (Cited from <a href="https://doi.org/10.7566/JPSJ.88.081004" target="_blank">S. Itoh and Y. Endo JPSJ <b>88</b>, 081004 (2019)</a>, and modified from the original version. )<br />
+            <img src="HRC_layout_v5.png"><br />
+            (Cited from <a href="https://doi.org/10.1016/j.physb.2018.11.059" target="_blank">S. Itoh et al. Physica B: Condensed Matter <b>568</b>, 76-80 (2019)</a>, and modified from the original version. )<br />
             See also <a href="https://mlfinfo.jp/en/bl12/" target="_blank">Official WebSite : BL12 HRC - High Resolution Chopper Spectrometer -</a>            
         </td>
     </tr>
@@ -67,12 +68,18 @@
                 <select id="freq">
                     <option value="100">100 Hz</option>
                     <option value="200">200 Hz</option>
-                    <option value="300">300 Hz</option>
+                    <option value="300" selected>300 Hz</option>
                     <option value="400">400 Hz</option>
                     <option value="500">500 Hz</option>
                     <option value="600">600 Hz</option>
                 </select> <br />
-                Target <i>E</i><sub>i</sub> : <input type="text" size="5" id="targetEi" value="20"> meV <br />
+                T<sub>0</sub> chopper freq. :
+                <select id="T0_freq">
+                    <option value="25">25 Hz</option>
+                    <option value="50" selected>50 Hz</option>
+                    <option value="100">100 Hz</option>
+                </select> <br />
+                Target <i>E</i><sub>i</sub> : <input type="text" size="5" id="targetEi" value="40"> meV <br />
                 Upper limit of <i>E</i><sub>i</sub> : <input type="text" size="5" id="upperLimitEi" value="8000"> meV <br />
                 <input type="button" value="   set   " onclick="draw()"/><br />
                 <br />
@@ -198,6 +205,6 @@ Omega angle range : from <input type="text" size="5" id="omega1" value="-50"> to
 <br />
 
 
-<div class="footer"> Version 0.6 by T. Nakajima, 2019.</div>
+<div class="footer"> Version <font id="verNum2"></font> by <a href="https://nakajima.issp.u-tokyo.ac.jp">T. Nakajima</a>, 2019.</div>
 </div> <!--end of mainbody-->
 </body>
