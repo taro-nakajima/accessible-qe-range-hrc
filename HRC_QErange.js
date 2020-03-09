@@ -1,6 +1,6 @@
 //JavaScript code for calculating accessible Q-E ranges for HRC
 // programed by T. Nakajima (ISSP-NSL) Oct. 20, 2019.
-var version = "0.7";
+var version = "0.8";
 var Ei_numMax=5;
 var Ei = new Array(Ei_numMax);
 var decimal_digit = 1000;
@@ -297,12 +297,20 @@ function draw_Qxy(){
     var originX = canvas3[0].width/2.0;
     var originY = canvas3[0].height/2.0;
    
-    var omg1 = Number(document.getElementById('omega1').value);
-    var omg2 = Number(document.getElementById('omega2').value);
-    if (omg2 < omg1){
-        var temp_omg2 = omg2;
-        omg2=omg1;
-        omg1=temp_omg2;
+    var omg_1 = Number(document.getElementById('omega1').value);
+    var omg_2 = Number(document.getElementById('omega2').value);
+    var omg_ofst = Number(document.getElementById('omg_ofst').value);
+
+    var psi1 = -(omg_1-omg_ofst);
+    var psi2 = -(omg_2-omg_ofst);
+
+    document.getElementById('Psi1').value=psi1;
+    document.getElementById('Psi2').value=psi2;
+
+    if (psi2 < psi1){
+        var temp_psi2 = psi2;
+        psi2=psi1;
+        psi1=temp_psi2;
     }
 
     var a_star = Number(document.getElementById('a_star').value);
@@ -330,11 +338,11 @@ function draw_Qxy(){
 
     //accessible area
     //CCW rotation of sample -> CW rotation of accessible range (omg -> -omg)
-    var cosOmg1 = Math.cos(-Math.PI/180.0*omg1);
-    var sinOmg1 = Math.sin(-Math.PI/180.0*omg1);
+    var cospsi1 = Math.cos(-Math.PI/180.0*psi1);
+    var sinpsi1 = Math.sin(-Math.PI/180.0*psi1);
 
-    var cosOmg2 = Math.cos(-Math.PI/180.0*omg2);
-    var sinOmg2 = Math.sin(-Math.PI/180.0*omg2);
+    var cospsi2 = Math.cos(-Math.PI/180.0*psi2);
+    var sinpsi2 = Math.sin(-Math.PI/180.0*psi2);
 
 
     for(var p=0;p<Ei_numMax;p+=1){
@@ -356,8 +364,8 @@ function draw_Qxy(){
         var dX=(Math.cos(Math.PI/180.0*tth_Min[i_tth])*kf-1.0*ki[p])*scale[p];
         var dY=(Math.sin(Math.PI/180.0*tth_Min[i_tth]))*kf*scale[p];
 
-        var tempX = cosOmg1*dX - sinOmg1*dY;
-        var tempY = sinOmg1*dX + cosOmg1*dY;
+        var tempX = cospsi1*dX - sinpsi1*dY;
+        var tempY = sinpsi1*dX + cospsi1*dY;
 
         var dX = tempX;
         var dY = tempY;
@@ -368,20 +376,20 @@ function draw_Qxy(){
             var dX=(Math.cos(Math.PI/180.0*tth)*kf-1.0*ki[p])*scale[p];
             var dY=(Math.sin(Math.PI/180.0*tth))*kf*scale[p];
 
-            var tempX = cosOmg1*dX - sinOmg1*dY;
-            var tempY = sinOmg1*dX + cosOmg1*dY;
+            var tempX = cospsi1*dX - sinpsi1*dY;
+            var tempY = sinpsi1*dX + cospsi1*dY;
 
             var dX = tempX;
             var dY = tempY;
 
             context3[p].lineTo(originX+dX , originY - dY);
         }
-        for (var omg= omg1; omg < omg2; omg += 0.5) {
+        for (var psi= psi1; psi < psi2; psi += 0.5) {
             var dX=(Math.cos(Math.PI/180.0*tth_Max[i_tth])*kf-1.0*ki[p])*scale[p];
             var dY=(Math.sin(Math.PI/180.0*tth_Max[i_tth]))*kf*scale[p];
 
-            var tempX = Math.cos(-Math.PI/180.0*omg)*dX - Math.sin(-Math.PI/180.0*omg)*dY;
-            var tempY = Math.sin(-Math.PI/180.0*omg)*dX + Math.cos(-Math.PI/180.0*omg)*dY;
+            var tempX = Math.cos(-Math.PI/180.0*psi)*dX - Math.sin(-Math.PI/180.0*psi)*dY;
+            var tempY = Math.sin(-Math.PI/180.0*psi)*dX + Math.cos(-Math.PI/180.0*psi)*dY;
 
             var dX = tempX;
             var dY = tempY;
@@ -392,19 +400,19 @@ function draw_Qxy(){
             var dX=(Math.cos(Math.PI/180.0*i)*kf-1.0*ki[p])*scale[p];
             var dY=(Math.sin(Math.PI/180.0*i))*kf*scale[p];
 
-            var tempX = cosOmg2*dX - sinOmg2*dY;
-            var tempY = sinOmg2*dX + cosOmg2*dY;
+            var tempX = cospsi2*dX - sinpsi2*dY;
+            var tempY = sinpsi2*dX + cospsi2*dY;
 
             var dX = tempX;
             var dY = tempY;
             context3[p].lineTo(originX+dX , originY - dY);
         }
-        for (var omg= omg2; omg > omg1; omg -= 0.5) {
+        for (var psi= psi2; psi > psi1; psi -= 0.5) {
             var dX=(Math.cos(Math.PI/180.0*tth_Min[i_tth])*kf-1.0*ki[p])*scale[p];
             var dY=(Math.sin(Math.PI/180.0*tth_Min[i_tth]))*kf*scale[p];
 
-            var tempX = Math.cos(-Math.PI/180.0*omg)*dX - Math.sin(-Math.PI/180.0*omg)*dY;
-            var tempY = Math.sin(-Math.PI/180.0*omg)*dX + Math.cos(-Math.PI/180.0*omg)*dY;
+            var tempX = Math.cos(-Math.PI/180.0*psi)*dX - Math.sin(-Math.PI/180.0*psi)*dY;
+            var tempY = Math.sin(-Math.PI/180.0*psi)*dX + Math.cos(-Math.PI/180.0*psi)*dY;
 
             var dX = tempX;
             var dY = tempY;
@@ -608,16 +616,25 @@ function drawQELineCuts() {
         context4[ii] = canvas4[ii].getContext('2d');    
     }
 
-    var omg1 = Number(document.getElementById('omega1').value);
-    var omg2 = Number(document.getElementById('omega2').value);
+    var omg_1 = Number(document.getElementById('omega1').value);
+    var omg_2 = Number(document.getElementById('omega2').value);
+    var omg_ofst = Number(document.getElementById('omg_ofst').value);
+
+    var psi1 = -(omg_1-omg_ofst);
+    var psi2 = -(omg_2-omg_ofst);
+    if (psi2 < psi1){
+        var temp_psi2 = psi2;
+        psi2=psi1;
+        psi1=temp_psi2;
+    }
 
     // to aboid zero-division
-    if((omg1==0)||(Math.abs(omg1)==90)){
-        omg1+=0.1;
+    if((psi1==0)||(Math.abs(psi1)==90)){
+        psi1+=0.1;
     }
     // to aboid zero-division
-    if((omg2==0)||(Math.abs(omg2)==90)){
-        omg2+=0.1;
+    if((psi2==0)||(Math.abs(psi2)==90)){
+        psi2+=0.1;
     }
    
     var ki = new Array(Ei_numMax);
@@ -626,15 +643,15 @@ function drawQELineCuts() {
     }
 
 
-    var omgRept=2;
-    var cosOmg = new Array(omgRept);
-    var sinOmg = new Array(omgRept);
+    var psiRept=2;
+    var cosPsi = new Array(psiRept);
+    var sinPsi = new Array(psiRept);
 
-    cosOmg[0] = Math.cos(Math.PI/180.0*omg1);
-    sinOmg[0] = Math.sin(Math.PI/180.0*omg1);
+    cosPsi[0] = Math.cos(Math.PI/180.0*psi1);
+    sinPsi[0] = Math.sin(Math.PI/180.0*psi1);
 
-    cosOmg[1] = Math.cos(Math.PI/180.0*omg2);
-    sinOmg[1] = Math.sin(Math.PI/180.0*omg2);
+    cosPsi[1] = Math.cos(Math.PI/180.0*psi2);
+    sinPsi[1] = Math.sin(Math.PI/180.0*psi2);
 
     var a_star = Number(document.getElementById('a_star').value);
     var b_star = Number(document.getElementById('b_star').value);
@@ -674,13 +691,13 @@ function drawQELineCuts() {
     
         for(var m=0;m<DetBankNum;m+=1){
         for(var sign =-1;sign<2;sign+=2){
-        for(var kk=0;kk<omgRept;kk+=1){
+        for(var kk=0;kk<psiRept;kk+=1){
         
-            var rotStartQx=cosOmg[kk]*startQx - sinOmg[kk]*startQy;
-            var rotStartQy=sinOmg[kk]*startQx + cosOmg[kk]*startQy;
+            var rotStartQx=cosPsi[kk]*startQx - sinPsi[kk]*startQy;
+            var rotStartQy=sinPsi[kk]*startQx + cosPsi[kk]*startQy;
     
-            var rotEndQx=cosOmg[kk]*endQx - sinOmg[kk]*endQy;
-            var rotEndQy=sinOmg[kk]*endQx + cosOmg[kk]*endQy;
+            var rotEndQx=cosPsi[kk]*endQx - sinPsi[kk]*endQy;
+            var rotEndQy=sinPsi[kk]*endQx + cosPsi[kk]*endQy;
     
             var A1=(rotEndQy-rotStartQy)/(rotEndQx-rotStartQx);
             var B1=rotEndQy-A1*rotEndQx;
@@ -729,8 +746,8 @@ function drawQELineCuts() {
                     }
 
                     if(drawFlag==true){
-                        var rotBackQxEdge1=cosOmg[kk]*QxEdge1+sinOmg[kk]*QyEdge1;
-                        var rotBackQyEdge1=-sinOmg[kk]*QxEdge1+cosOmg[kk]*QyEdge1;
+                        var rotBackQxEdge1=cosPsi[kk]*QxEdge1+sinPsi[kk]*QyEdge1;
+                        var rotBackQyEdge1=-sinPsi[kk]*QxEdge1+cosPsi[kk]*QyEdge1;
     
                         var distQx=rotBackQxEdge1-startQx;
                         var distQy=rotBackQyEdge1-startQy;
@@ -749,7 +766,7 @@ function drawQELineCuts() {
                 }
             }        
             context4[ii].stroke();
-        }   // end of omgRept loop
+        }   // end of psiRept loop
         }   // end of sign loop
         }   // end of DetBankNum loop
 
@@ -777,15 +794,15 @@ function drawQELineCuts() {
                 }
 
                 var QlimSq = (kf*Math.sin(Math.PI/180.0*TTH_lim))**2.0+(kf*Math.cos(Math.PI/180*TTH_lim)-ki[ii])**2.0;
-                var OmgZero = Math.atan2(kf*Math.sin(Math.PI/180.0*TTH_lim),kf*Math.cos(Math.PI/180.0*TTH_lim)-ki[ii]);//0;
-                if(OmgZero<0){
-                    OmgZero=OmgZero+2*Math.PI;
+                var AlphaZero = Math.atan2(kf*Math.sin(Math.PI/180.0*TTH_lim),kf*Math.cos(Math.PI/180.0*TTH_lim)-ki[ii]);//0;
+                if(AlphaZero<0){
+                    AlphaZero=AlphaZero+2*Math.PI;
                 }
-                var OmgMin = OmgZero-omg2/180.0*Math.PI;
-                var OmgMax = OmgZero-omg1/180.0*Math.PI;
+                var AlphaMin = AlphaZero-psi2/180.0*Math.PI;
+                var AlphaMax = AlphaZero-psi1/180.0*Math.PI;
                 
-                if(OmgMax<OmgMin){
-                    OmgMax=OmgMax+2.0*Math.PI;
+                if(AlphaMax<AlphaMin){
+                    AlphaMax=AlphaMax+2.0*Math.PI;
                 }
 
                 var QyEdge1=0;
@@ -826,13 +843,13 @@ function drawQELineCuts() {
     
                     var productQ = fullScanX*distQx+fullScanY*distQy;
     
-                    OmgTgt=Math.atan2(QyEdge1,QxEdge1);
+                    AlphaTgt=Math.atan2(QyEdge1,QxEdge1);
     
-                    if(OmgTgt<0){
-                        OmgTgt=OmgTgt+2.0*Math.PI;
+                    if(AlphaTgt<0){
+                        AlphaTgt=AlphaTgt+2.0*Math.PI;
                     }
     
-                    if((OmgTgt>=OmgMin)&&(OmgTgt<=OmgMax)){
+                    if((AlphaTgt>=AlphaMin)&&(AlphaTgt<=AlphaMax)){
                         if(isFirstPoint==true){
                             context4[ii].moveTo(OriginX+productQ/fullQLength**2.0*(canvas4[ii].width-OriginX*3),canvas4[ii].height-jj*1);
                             isFirstPoint=false;
