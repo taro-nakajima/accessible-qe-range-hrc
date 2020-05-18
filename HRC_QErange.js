@@ -40,7 +40,7 @@ function draw_TOF(){
     var inputLT0 = Number(document.getElementById('input_LT0').value);
 
     var Ltotal_R = inputL1+inputL2;      // Real source to detector (m)
-    var Lsc_R = inputL1-inputL3;        // Real sample chopper distance  (m)
+    var Lsc_R = inputL1-inputL3;        // Real source chopper distance  (m)
     var L1_R = inputL1;          // Real source to sample distance (m)
     var LT0_R = inputLT0;        // Real source to T0 distance (m)
     var TOF_len_R = 40;       // Real TOF max (ms)
